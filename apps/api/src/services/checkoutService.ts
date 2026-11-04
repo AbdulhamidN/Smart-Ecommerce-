@@ -46,15 +46,16 @@ export class CheckoutService {
     }
 
     // 2. Critical Transaction: Stock decrement, Order creation, Payment, and Cart clearing
-    return prisma.$transaction(
-      async (tx) => {
-        // a. Read user's cart items
-        const cartItems = await tx.cartItem.findMany({
-          where: { userId },
-          include: {
-            product: true,
-          },
-        });
+    try {
+      return await prisma.$transaction(
+        async (tx) => {
+          // a. Read user's cart items
+          const cartItems = await tx.cartItem.findMany({
+            where: { userId },
+            include: {
+              product: true,
+            },
+          });
 
       if (cartItems.length === 0) {
         throw new AppError('Cannot checkout with an empty cart', 'EMPTY_CART', 400);
@@ -169,18 +170,28 @@ export class CheckoutService {
         },
       });
 
-        // e. Clear the user's cart
-        await tx.cartItem.deleteMany({
-          where: { userId },
-        });
+          // e. Clear the user's cart
+          await tx.cartItem.deleteMany({
+            where: { userId },
+          });
 
-        return order;
-      },
-      {
-        maxWait: 10000,
-        timeout: 20000,
+          return order;
+        },
+        {
+          maxWait: 30000,
+          timeout: 60000,
+        }
+      );
+    } catch (err: any) {
+      if (err?.code === 'P2034' || err?.code === 'P2028') {
+        throw new AppError(
+          'Product is currently locked by another checkout or has run out of stock. Please try again.',
+          'OUT_OF_STOCK',
+          400
+        );
       }
-    );
+      throw err;
+    }
   }
 
   static async getUserOrders(userId: string) {
