@@ -6,6 +6,11 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/authRoutes';
 import productRoutes from './routes/productRoutes';
+import sellerRoutes from './routes/sellerRoutes';
+import { authenticate } from './middleware/authenticate';
+import { requireRole } from './middleware/requireRole';
+import { requireApprovedSeller } from './middleware/requireApprovedSeller';
+import { Role } from '@prisma/client';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -44,6 +49,13 @@ const authLimiter = rateLimit({
 
 // Routes
 app.use('/api/v1/auth', authLimiter, authRoutes);
+app.use(
+  '/api/v1/seller',
+  authenticate,
+  requireRole(Role.SELLER),
+  requireApprovedSeller,
+  sellerRoutes
+);
 app.use('/api/v1', productRoutes);
 
 // 404 Handler
