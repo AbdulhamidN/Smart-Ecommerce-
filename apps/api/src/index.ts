@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/authRoutes';
 import productRoutes from './routes/productRoutes';
 import sellerRoutes from './routes/sellerRoutes';
+import cartRoutes from './routes/cartRoutes';
+import orderRoutes from './routes/orderRoutes';
 import { authenticate } from './middleware/authenticate';
 import { requireRole } from './middleware/requireRole';
 import { requireApprovedSeller } from './middleware/requireApprovedSeller';
@@ -56,6 +58,8 @@ app.use(
   requireApprovedSeller,
   sellerRoutes
 );
+app.use('/api/v1/cart', authenticate, cartRoutes);
+app.use('/api/v1/orders', authenticate, orderRoutes);
 app.use('/api/v1', productRoutes);
 
 // 404 Handler
