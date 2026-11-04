@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/authRoutes';
+import productRoutes from './routes/productRoutes';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -43,6 +44,7 @@ const authLimiter = rateLimit({
 
 // Routes
 app.use('/api/v1/auth', authLimiter, authRoutes);
+app.use('/api/v1', productRoutes);
 
 // 404 Handler
 app.use((_req, res) => {

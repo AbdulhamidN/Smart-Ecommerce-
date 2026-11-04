@@ -20,3 +20,43 @@ export const validateBody = (schema: ZodSchema) => {
     }
   };
 };
+
+export const validateQuery = (schema: ZodSchema) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.query = (await schema.parseAsync(req.query)) as any;
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid query parameters',
+            details: error.flatten().fieldErrors,
+          },
+        });
+      }
+      next(error);
+    }
+  };
+};
+
+export const validateParams = (schema: ZodSchema) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.params = (await schema.parseAsync(req.params)) as any;
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid route parameters',
+            details: error.flatten().fieldErrors,
+          },
+        });
+      }
+      next(error);
+    }
+  };
+};
