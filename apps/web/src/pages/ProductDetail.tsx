@@ -1,0 +1,179 @@
+import React, { useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useProduct } from '../api/products';
+import { formatMoney } from '../utils/format';
+
+export const ProductDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { data: product, isLoading, isError } = useProduct(id);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 animate-pulse">
+          <div className="aspect-square bg-gray-200 rounded-2xl"></div>
+          <div className="space-y-6">
+            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+            <div className="h-24 bg-gray-200 rounded w-full"></div>
+            <div className="h-12 bg-gray-200 rounded w-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <div className="max-w-md mx-auto my-20 bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+        <p className="text-gray-500 text-sm mb-6">
+          The product you are looking for does not exist or may have been unlisted.
+        </p>
+        <button
+          onClick={() => navigate('/')}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition"
+        >
+          Return to Catalog
+        </button>
+      </div>
+    );
+  }
+
+  const isOutOfStock = product.stock <= 0;
+  const isLowStock = product.stock > 0 && product.stock <= 3;
+  const images = product.images && product.images.length > 0
+    ? product.images
+    : [{ id: 'default', url: `https://placehold.co/800x600/png?text=${encodeURIComponent(product.title)}`, sortOrder: 0 }];
+
+  const currentImageUrl = images[selectedImageIndex]?.url || images[0].url;
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-8">
+        <Link to="/" className="hover:text-indigo-600 transition">Products</Link>
+        <span>/</span>
+        <Link to={`/?category=${product.category?.slug}`} className="hover:text-indigo-600 transition capitalize">
+          {product.category?.name || 'Category'}
+        </Link>
+        <span>/</span>
+        <span className="text-gray-900 font-medium truncate max-w-xs">{product.title}</span>
+      </nav>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-3xl p-6 sm:p-10 border border-gray-100 shadow-sm">
+        {/* Left: Images Gallery */}
+        <div className="space-y-4">
+          <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center">
+            <img
+              src={currentImageUrl}
+              alt={product.title}
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+
+          {images.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {images.map((img, idx) => (
+                <button
+                  key={img.id}
+                  onClick={() => setSelectedImageIndex(idx)}
+                  className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition shrink-0 ${
+                    selectedImageIndex === idx ? 'border-indigo-600 shadow-sm' : 'border-gray-200 opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right: Product Details */}
+        <div className="flex flex-col justify-between">
+          <div className="space-y-6">
+            {/* Category & SKU */}
+            <div className="flex items-center justify-between">
+              <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider rounded-md">
+                {product.category?.name}
+              </span>
+              <span className="text-xs text-gray-400 font-mono">SKU: {product.sku}</span>
+            </div>
+
+            {/* Title & Seller */}
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                {product.title}
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Sold by <span className="font-semibold text-gray-800">{product.seller?.storeName}</span>
+              </p>
+            </div>
+
+            {/* Price & Stock Badge */}
+            <div className="flex items-center gap-4 py-4 border-y border-gray-100">
+              <span className="text-3xl font-black text-gray-900 tracking-tight">
+                {formatMoney(product.priceCents)}
+              </span>
+
+              <div>
+                {isOutOfStock ? (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">
+                    Out of Stock
+                  </span>
+                ) : isLowStock ? (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    Low Stock: Only {product.stock} left!
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    In Stock ({product.stock} units)
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-900 mb-2">About this item</h3>
+              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                {product.description}
+              </p>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <div className="pt-8 mt-6 border-t border-gray-100">
+            <button
+              disabled={isOutOfStock}
+              onClick={() => {
+                // Cart will be hooked up in Phase 4
+              }}
+              className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center space-x-2 ${
+                isOutOfStock
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98 shadow-indigo-100'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <span>{isOutOfStock ? 'Currently Out of Stock' : 'Add to Cart'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductDetail;

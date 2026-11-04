@@ -6,6 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Products from './pages/Products';
+import ProductDetail from './pages/ProductDetail';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +31,7 @@ const Navbar: React.FC = () => {
     <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
                 S
@@ -38,12 +40,25 @@ const Navbar: React.FC = () => {
                 Smart E-Commerce
               </span>
             </Link>
+
+            <Link
+              to="/"
+              className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition"
+            >
+              Catalog
+            </Link>
           </div>
 
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-700">
+                <Link
+                  to="/dashboard"
+                  className="text-xs font-semibold px-2.5 py-1.5 rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                >
+                  Dashboard
+                </Link>
+                <span className="text-sm font-medium text-gray-700 hidden sm:inline">
                   Welcome, <span className="font-semibold text-gray-900">{user.name}</span>{' '}
                   <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-bold uppercase">
                     ({user.role})
@@ -95,6 +110,11 @@ export default function App() {
             <Navbar />
             <main className="flex-1">
               <Routes>
+                {/* Catalog Public Routes */}
+                <Route path="/" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetail />} />
+
+                {/* Auth Routes */}
                 <Route
                   path="/login"
                   element={
@@ -111,14 +131,17 @@ export default function App() {
                     </PublicOnlyRoute>
                   }
                 />
+
+                {/* Protected Dashboard Route */}
                 <Route
-                  path="/"
+                  path="/dashboard"
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
                   }
                 />
+
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
