@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -9,6 +10,9 @@ import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import SellerDashboard from './pages/SellerDashboard';
+import Cart from './pages/Cart';
+import OrderHistory from './pages/OrderHistory';
+import { useCart } from './api/cart';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +26,9 @@ const queryClient = new QueryClient({
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { data: cart } = useCart(!!user && user.role === 'CUSTOMER');
+
+  const cartQuantity = cart?.totalQuantity || 0;
 
   const handleLogout = async () => {
     await logout();
@@ -49,6 +56,18 @@ const Navbar: React.FC = () => {
               Catalog
             </Link>
 
+            {user?.role === 'CUSTOMER' && (
+              <Link
+                to="/orders"
+                className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition flex items-center gap-1.5"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Orders
+              </Link>
+            )}
+
             {user?.role === 'SELLER' && (
               <Link
                 to="/seller"
@@ -63,6 +82,29 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Cart Icon (visible to customers and guests) */}
+            {(!user || user.role === 'CUSTOMER') && (
+              <Link
+                to="/cart"
+                className="relative p-2 text-gray-600 hover:text-indigo-600 transition flex items-center rounded-lg hover:bg-gray-50"
+                aria-label="Shopping Cart"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                {cartQuantity > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+                    {cartQuantity > 99 ? '99+' : cartQuantity}
+                  </span>
+                )}
+              </Link>
+            )}
+
             {user ? (
               <div className="flex items-center gap-4">
                 <Link
@@ -118,58 +160,78 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-            <Navbar />
-            <main className="flex-1">
-              <Routes>
-                {/* Catalog Public Routes */}
-                <Route path="/" element={<Products />} />
-                <Route path="/products/:id" element={<ProductDetail />} />
+        <ToastProvider>
+          <BrowserRouter>
+            <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+              <Navbar />
+              <main className="flex-1">
+                <Routes>
+                  {/* Catalog Public Routes */}
+                  <Route path="/" element={<Products />} />
+                  <Route path="/products/:id" element={<ProductDetail />} />
 
-                {/* Auth Routes */}
-                <Route
-                  path="/login"
-                  element={
-                    <PublicOnlyRoute>
-                      <Login />
-                    </PublicOnlyRoute>
-                  }
-                />
-                <Route
-                  path="/register"
-                  element={
-                    <PublicOnlyRoute>
-                      <Register />
-                    </PublicOnlyRoute>
-                  }
-                />
+                  {/* Customer Cart & Orders */}
+                  <Route
+                    path="/cart"
+                    element={
+                      <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                        <Cart />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/orders"
+                    element={
+                      <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                        <OrderHistory />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Protected Dashboard Route */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Auth Routes */}
+                  <Route
+                    path="/login"
+                    element={
+                      <PublicOnlyRoute>
+                        <Login />
+                      </PublicOnlyRoute>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <PublicOnlyRoute>
+                        <Register />
+                      </PublicOnlyRoute>
+                    }
+                  />
 
-                {/* Protected Seller Route */}
-                <Route
-                  path="/seller"
-                  element={
-                    <ProtectedRoute allowedRoles={['SELLER']}>
-                      <SellerDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Protected Dashboard Route */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
-          </div>
-        </BrowserRouter>
+                  {/* Protected Seller Route */}
+                  <Route
+                    path="/seller"
+                    element={
+                      <ProtectedRoute allowedRoles={['SELLER']}>
+                        <SellerDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+            </div>
+          </BrowserRouter>
+        </ToastProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

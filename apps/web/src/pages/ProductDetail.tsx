@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useProduct } from '../api/products';
 import { formatMoney } from '../utils/format';
+import { useAuth } from '../context/AuthContext';
+import { useAddToCart } from '../api/cart';
+import { useToast } from '../context/ToastContext';
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
+  const { showToast } = useToast();
   const { data: product, isLoading, isError } = useProduct(id);
+  const addToCartMutation = useAddToCart();
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   if (isLoading) {
     return (
@@ -55,6 +64,24 @@ export const ProductDetail: React.FC = () => {
     : [{ id: 'default', url: `https://placehold.co/800x600/png?text=${encodeURIComponent(product.title)}`, sortOrder: 0 }];
 
   const currentImageUrl = images[selectedImageIndex]?.url || images[0].url;
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+
+    try {
+      await addToCartMutation.mutateAsync({
+        productId: product.id,
+        quantity,
+      });
+      showToast(`Added ${quantity} × "${product.title}" to cart!`, 'success');
+    } catch (err: any) {
+      const msg = err.response?.data?.error?.message || 'Failed to add item to cart';
+      showToast(msg, 'error');
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -149,25 +176,64 @@ export const ProductDetail: React.FC = () => {
                 {product.description}
               </p>
             </div>
+
+            {/* Quantity Selector */}
+            {!isOutOfStock && (
+              <div className="flex items-center gap-4">
+                <label htmlFor="quantity" className="text-sm font-semibold text-gray-700">
+                  Quantity:
+                </label>
+                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    disabled={quantity <= 1}
+                    className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition"
+                  >
+                    -
+                  </button>
+                  <span className="px-4 py-1.5 text-sm font-semibold text-gray-900 min-w-[2.5rem] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                    disabled={quantity >= product.stock}
+                    className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition"
+                  >
+                    +
+                  </button>
+                </div>
+                <span className="text-xs text-gray-400">
+                  (Max: {product.stock})
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Action Button */}
           <div className="pt-8 mt-6 border-t border-gray-100">
             <button
-              disabled={isOutOfStock}
-              onClick={() => {
-                // Cart will be hooked up in Phase 4
-              }}
+              disabled={isOutOfStock || addToCartMutation.isPending}
+              onClick={handleAddToCart}
               className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center space-x-2 ${
                 isOutOfStock
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
+                  : addToCartMutation.isPending
+                  ? 'bg-indigo-400 text-white cursor-wait'
                   : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98 shadow-indigo-100'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              <span>{isOutOfStock ? 'Currently Out of Stock' : 'Add to Cart'}</span>
+              <span>
+                {isOutOfStock
+                  ? 'Currently Out of Stock'
+                  : addToCartMutation.isPending
+                  ? 'Adding to Cart...'
+                  : `Add to Cart (${formatMoney(product.priceCents * quantity)})`}
+              </span>
             </button>
           </div>
         </div>
