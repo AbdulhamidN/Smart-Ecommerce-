@@ -9,6 +9,8 @@ import productRoutes from './routes/productRoutes';
 import sellerRoutes from './routes/sellerRoutes';
 import cartRoutes from './routes/cartRoutes';
 import orderRoutes from './routes/orderRoutes';
+import adminRoutes from './routes/adminRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 import { authenticate } from './middleware/authenticate';
 import { requireRole } from './middleware/requireRole';
 import { requireApprovedSeller } from './middleware/requireApprovedSeller';
@@ -60,6 +62,8 @@ app.use(
 );
 app.use('/api/v1/cart', authenticate, cartRoutes);
 app.use('/api/v1/orders', authenticate, orderRoutes);
+app.use('/api/v1/admin', authenticate, requireRole(Role.ADMIN), adminRoutes);
+app.use('/api/v1/notifications', authenticate, notificationRoutes);
 app.use('/api/v1', productRoutes);
 
 // 404 Handler

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SellerProductController } from '../controllers/sellerProductController';
+import { SellerAnalyticsController } from '../controllers/sellerAnalyticsController';
 import { validateBody, validateParams } from '../middleware/validate';
 import {
   createProductSchema,
@@ -9,6 +10,7 @@ import {
 
 const router = Router();
 
+router.get('/analytics', SellerAnalyticsController.getStats);
 router.get('/products', SellerProductController.getProducts);
 router.post('/products', validateBody(createProductSchema), SellerProductController.createProduct);
 router.patch(
