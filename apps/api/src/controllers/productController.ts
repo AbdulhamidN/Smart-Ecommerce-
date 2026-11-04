@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { ProductService } from '../services/productService';
 import { CategoryService } from '../services/categoryService';
+import { RecommendationService } from '../services/recommendationService';
+import { AppError } from '../lib/errors';
 import { ProductQueryInput } from '../schemas/productSchema';
 
 export class ProductController {
@@ -28,6 +30,26 @@ export class ProductController {
           error: {
             code: 'PRODUCT_NOT_FOUND',
             message: 'Product not found',
+          },
+        });
+      }
+      next(err);
+    }
+  }
+
+  static async getRecommendations(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const recommendations = await RecommendationService.getRecommendations(id);
+      return res.status(200).json({
+        data: recommendations,
+      });
+    } catch (err: unknown) {
+      if (err instanceof AppError) {
+        return res.status(err.statusCode).json({
+          error: {
+            code: err.code,
+            message: err.message,
           },
         });
       }

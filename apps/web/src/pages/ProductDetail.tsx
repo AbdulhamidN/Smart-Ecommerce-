@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useProduct } from '../api/products';
+import { useProduct, useRecommendations } from '../api/products';
 import { formatMoney } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
 import { useAddToCart } from '../api/cart';
 import { useToast } from '../context/ToastContext';
+import ProductCard from '../components/ProductCard';
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ export const ProductDetail: React.FC = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { data: product, isLoading, isError } = useProduct(id);
+  const { data: recommendations = [], isLoading: isRecsLoading } = useRecommendations(id);
   const addToCartMutation = useAddToCart();
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -237,6 +239,44 @@ export const ProductDetail: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Recommendations Section */}
+      <div className="mt-16 pt-12 border-t border-gray-200/80">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+                Smart Suggestions
+              </span>
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight mt-1">
+              You May Also Like
+            </h2>
+            <p className="text-xs text-gray-500 mt-1">
+              Frequently purchased together or popular in this category.
+            </p>
+          </div>
+        </div>
+
+        {isRecsLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-72 bg-gray-200 rounded-2xl"></div>
+            ))}
+          </div>
+        ) : recommendations.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recommendations.map((recProduct) => (
+              <ProductCard key={recProduct.id} product={recProduct} />
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center bg-gray-50 rounded-2xl border border-gray-100 text-xs text-gray-400">
+            No additional recommendations available for this product.
+          </div>
+        )}
       </div>
     </div>
   );

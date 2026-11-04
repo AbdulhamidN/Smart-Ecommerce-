@@ -9,7 +9,12 @@ const router = Router();
 router.get('/categories', ProductController.getCategories);
 router.get('/products', validateQuery(productQuerySchema), ProductController.getProducts);
 
-// 2. Specific parameterized product route
+// 2. Specific parameterized product routes
+router.get(
+  '/products/:id/recommendations',
+  validateParams(productIdParamSchema),
+  ProductController.getRecommendations
+);
 router.get('/products/:id', validateParams(productIdParamSchema), ProductController.getProductById);
 
 export default router;

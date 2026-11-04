@@ -99,3 +99,14 @@ export const useCategories = () => {
     },
   });
 };
+
+export const useRecommendations = (id?: string) => {
+  return useQuery<Product[]>({
+    queryKey: ['recommendations', id],
+    queryFn: async () => {
+      const res = await apiClient.get(`/products/${id}/recommendations`);
+      return res.data.data;
+    },
+    enabled: !!id,
+  });
+};
