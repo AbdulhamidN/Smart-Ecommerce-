@@ -10,5 +10,8 @@
     "dev": "npm run dev --workspaces",
     "build": "npm run build --workspaces",
     "test": "npm run test --workspace=api"
+  },
+  "prisma": {
+    "seed": "tsx apps/api/prisma/seed.ts"
   }
 }

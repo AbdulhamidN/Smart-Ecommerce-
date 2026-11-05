@@ -21,7 +21,7 @@ export class ProductService {
       matchedIds = rawMatches.map((r) => r.id);
 
       // If search query returned 0 matches, return early
-      if (matchedIds.length === 0) {
+      if (!matchedIds || matchedIds.length === 0) {
         return {
           data: [],
           pagination: {
