@@ -133,6 +133,14 @@ export const Cart: React.FC = () => {
                     src={imageUrl}
                     alt={product.title}
                     className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      const fallback = `https://placehold.co/400x300/png?text=${encodeURIComponent(product.title)}`;
+                      if (target.src !== fallback) {
+                        target.src = fallback;
+                      }
+                    }}
                   />
                 </Link>
 

@@ -61,11 +61,15 @@ export const ProductDetail: React.FC = () => {
 
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 3;
-  const images = product.images && product.images.length > 0
-    ? product.images
-    : [{ id: 'default', url: `https://placehold.co/800x600/png?text=${encodeURIComponent(product.title)}`, sortOrder: 0 }];
+  const fallbackUrl = `https://placehold.co/800x600/png?text=${encodeURIComponent(product.title)}`;
+  const rawImages = product.images && product.images.length > 0
+    ? product.images.filter((img) => img && img.url)
+    : [];
+  const images = rawImages.length > 0
+    ? rawImages
+    : [{ id: 'default', url: fallbackUrl, sortOrder: 0 }];
 
-  const currentImageUrl = images[selectedImageIndex]?.url || images[0].url;
+  const currentImageUrl = images[selectedImageIndex]?.url || images[0]?.url || fallbackUrl;
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -107,6 +111,13 @@ export const ProductDetail: React.FC = () => {
               src={currentImageUrl}
               alt={product.title}
               className="w-full h-full object-cover object-center"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== fallbackUrl) {
+                  target.src = fallbackUrl;
+                }
+              }}
             />
           </div>
 
@@ -120,7 +131,18 @@ export const ProductDetail: React.FC = () => {
                     selectedImageIndex === idx ? 'border-indigo-600 shadow-sm' : 'border-gray-200 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={img.url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src !== fallbackUrl) {
+                        target.src = fallbackUrl;
+                      }
+                    }}
+                  />
                 </button>
               ))}
             </div>

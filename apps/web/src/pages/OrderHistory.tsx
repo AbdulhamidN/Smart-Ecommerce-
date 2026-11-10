@@ -258,6 +258,14 @@ export const OrderHistory: React.FC = () => {
                           src={imgUrl}
                           alt={item.product.title}
                           className="w-16 h-16 rounded-xl object-cover bg-gray-50 border border-gray-100 shrink-0"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            const fallback = `https://placehold.co/100x100/png?text=${encodeURIComponent(item.product.title)}`;
+                            if (target.src !== fallback) {
+                              target.src = fallback;
+                            }
+                          }}
                         />
                         <div className="flex-1 min-w-0">
                           <Link

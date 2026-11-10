@@ -17,10 +17,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { showToast } = useToast();
   const addToCartMutation = useAddToCart();
 
+  const fallbackUrl = `https://placehold.co/600x400/png?text=${encodeURIComponent(product.title)}`;
   const imageUrl =
-    product.images && product.images.length > 0
+    product.images && product.images.length > 0 && product.images[0]?.url
       ? product.images[0].url
-      : `https://placehold.co/600x400/png?text=${encodeURIComponent(product.title)}`;
+      : fallbackUrl;
 
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 3;
@@ -56,6 +57,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             alt={product.title}
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src !== fallbackUrl) {
+                target.src = fallbackUrl;
+              }
+            }}
           />
 
           {/* Stock Badge Overlay */}
