@@ -75,7 +75,8 @@ export const useProducts = (params?: ProductQueryParams) => {
       });
       return res.data;
     },
-    placeholderData: (previousData) => previousData,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    gcTime: 1000 * 60 * 15,    // 15 minutes garbage collection
   });
 };
 
@@ -87,6 +88,8 @@ export const useProduct = (id?: string) => {
       return res.data.data;
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    gcTime: 1000 * 60 * 15,    // 15 minutes garbage collection
   });
 };
 
@@ -97,6 +100,8 @@ export const useCategories = () => {
       const res = await apiClient.get('/categories');
       return res.data.data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    gcTime: 1000 * 60 * 15,    // 15 minutes garbage collection
   });
 };
 
@@ -108,5 +113,7 @@ export const useRecommendations = (id?: string) => {
       return res.data.data;
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    gcTime: 1000 * 60 * 15,    // 15 minutes garbage collection
   });
 };

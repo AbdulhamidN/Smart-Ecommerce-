@@ -33,7 +33,7 @@ export const Cart: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
         <div className="bg-white rounded-3xl p-12 border border-gray-100 shadow-sm">
-          <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
@@ -42,13 +42,13 @@ export const Cart: React.FC = () => {
             Your Cart is Empty
           </h2>
           <p className="text-gray-500 text-sm max-w-md mx-auto mb-8">
-            Looks like you haven't added anything to your cart yet. Explore our catalog of products and discover great deals.
+            Looks like you haven't added anything to your cart yet. Explore authentic Ethiopian coffee, traditional apparel, and electronics!
           </p>
           <Link
             to="/"
-            className="inline-flex items-center px-6 py-3 border border-transparent rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-sm"
+            className="inline-flex items-center px-6 py-3 border border-transparent rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-sm"
           >
-            Explore Catalog
+            Explore GibeMart Catalog
           </Link>
         </div>
       </div>
@@ -247,12 +247,12 @@ export const Cart: React.FC = () => {
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Estimated Tax</span>
-                <span className="font-semibold text-gray-900">$0.00</span>
+                <span className="font-semibold text-gray-900">{formatMoney(0)}</span>
               </div>
 
               <div className="border-t border-gray-100 pt-3 mt-3 flex justify-between items-center">
                 <span className="text-base font-bold text-gray-900">Total</span>
-                <span className="text-2xl font-black text-indigo-600 tracking-tight">
+                <span className="text-2xl font-black text-emerald-700 tracking-tight">
                   {formatMoney(cart.totalCents)}
                 </span>
               </div>
@@ -261,7 +261,7 @@ export const Cart: React.FC = () => {
             <button
               onClick={() => setIsCheckoutOpen(true)}
               disabled={hasUnavailableItems}
-              className="mt-6 w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-sm transition active:scale-98"
+              className="mt-6 w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-sm transition active:scale-98"
             >
               Proceed to Checkout
             </button>

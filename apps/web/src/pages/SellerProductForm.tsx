@@ -323,7 +323,7 @@ export const SellerProductForm: React.FC<SellerProductFormProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-sm font-semibold text-white rounded-lg transition shadow-sm disabled:opacity-50 flex items-center gap-2"
+              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-sm font-semibold text-white rounded-xl transition shadow-sm disabled:opacity-50 flex items-center gap-2"
             >
               {isSubmitting && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

@@ -96,16 +96,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, c
         {/* Content */}
         <div className="p-6">
           {/* Order Summary box */}
-          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6">
+          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-6">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-indigo-900 font-medium">Items ({cart.totalQuantity}):</span>
-              <span className="font-semibold text-indigo-900">{formatMoney(cart.totalCents)}</span>
+              <span className="text-emerald-900 font-medium">Items ({cart.totalQuantity}):</span>
+              <span className="font-semibold text-emerald-900">{formatMoney(cart.totalCents)}</span>
             </div>
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-indigo-900 font-medium">Standard Shipping:</span>
-              <span className="font-semibold text-indigo-900">FREE</span>
+              <span className="text-emerald-900 font-medium">Standard Delivery:</span>
+              <span className="font-semibold text-emerald-800">FREE</span>
             </div>
-            <div className="border-t border-indigo-200 mt-2 pt-2 flex justify-between items-center text-base font-bold text-indigo-950">
+            <div className="border-t border-emerald-200 mt-2 pt-2 flex justify-between items-center text-base font-bold text-emerald-950">
               <span>Total Amount:</span>
               <span>{formatMoney(cart.totalCents)}</span>
             </div>
@@ -217,7 +217,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, c
               <button
                 type="submit"
                 disabled={isSubmitting || checkoutMutation.isPending}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-bold rounded-lg shadow-sm transition flex items-center space-x-2"
+                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-sm transition flex items-center space-x-2"
               >
                 {checkoutMutation.isPending ? (
                   <>

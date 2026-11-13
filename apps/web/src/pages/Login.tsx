@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 
 const loginSchema = z.object({
@@ -17,6 +18,7 @@ export const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { showToast } = useToast();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -31,6 +33,8 @@ export const Login: React.FC = () => {
     try {
       setServerError(null);
       await login(data.email, data.password);
+      showToast('Signed in successfully! Welcome to GibeMart.', 'success');
+
       const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
       navigate(from, { replace: true });
     } catch (err: unknown) {
@@ -43,30 +47,39 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-stone-50">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-          Sign in to your account
+        <div className="flex justify-center mb-3">
+          <Link to="/">
+            <img src="/logo.png" alt="GibeMart" className="h-12 w-auto object-contain" />
+          </Link>
+        </div>
+
+        <h2 className="text-center text-3xl font-black text-stone-900 tracking-tight">
+          Sign In
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-            create a new account
+        <p className="mt-2 text-center text-sm text-stone-600">
+          New to GibeMart?{' '}
+          <Link to="/register" className="font-bold text-teal-600 hover:text-teal-700 underline">
+            Create an account
           </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-md rounded-xl sm:px-10 border border-gray-100">
+        <div className="bg-white py-8 px-6 shadow-xl rounded-3xl sm:px-10 border border-stone-200">
           {serverError && (
-            <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
-              <p className="text-sm font-medium text-red-800">{serverError}</p>
+            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-xs font-semibold text-red-800 flex items-center gap-2">
+              <svg className="w-4 h-4 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{serverError}</span>
             </div>
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-xs font-bold text-stone-700 uppercase tracking-wider">
                 Email address
               </label>
               <div className="mt-1">
@@ -75,19 +88,19 @@ export const Login: React.FC = () => {
                   type="email"
                   autoComplete="email"
                   {...register('email')}
-                  className={`appearance-none block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                    errors.email ? 'border-red-300' : 'border-gray-300'
+                  className={`appearance-none block w-full px-3.5 py-2.5 bg-stone-50 border rounded-xl shadow-sm placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm ${
+                    errors.email ? 'border-red-300' : 'border-stone-300'
                   }`}
-                  placeholder="admin@demo.com"
+                  placeholder="customer1@demo.com"
                 />
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                  <p className="mt-1 text-xs text-red-600 font-semibold">{errors.email.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-xs font-bold text-stone-700 uppercase tracking-wider">
                 Password
               </label>
               <div className="mt-1">
@@ -96,13 +109,13 @@ export const Login: React.FC = () => {
                   type="password"
                   autoComplete="current-password"
                   {...register('password')}
-                  className={`appearance-none block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                    errors.password ? 'border-red-300' : 'border-gray-300'
+                  className={`appearance-none block w-full px-3.5 py-2.5 bg-stone-50 border rounded-xl shadow-sm placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm ${
+                    errors.password ? 'border-red-300' : 'border-stone-300'
                   }`}
                   placeholder="••••••••"
                 />
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                  <p className="mt-1 text-xs text-red-600 font-semibold">{errors.password.message}</p>
                 )}
               </div>
             </div>
@@ -111,18 +124,20 @@ export const Login: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition disabled:opacity-50"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-2xl shadow-md text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition disabled:opacity-50"
               >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
+                {isSubmitting ? 'Signing in...' : 'Sign In'}
               </button>
             </div>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-gray-100 text-xs text-gray-500 text-center space-y-1">
-            <p className="font-semibold text-gray-600">Demo Accounts:</p>
-            <p>Admin: admin@demo.com / Admin123!</p>
-            <p>Customer: customer1@demo.com / Customer123!</p>
-            <p>Seller: seller1@demo.com / Seller123!</p>
+          <div className="mt-6 pt-6 border-t border-stone-100 text-center text-xs text-stone-500 space-y-2">
+            <p>
+              Are you a merchant?{' '}
+              <Link to="/sell/login" className="font-bold text-amber-600 hover:text-amber-700 underline">
+                Sign in as Seller
+              </Link>
+            </p>
           </div>
         </div>
       </div>

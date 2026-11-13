@@ -50,7 +50,7 @@ const OrderTimeline: React.FC<{ status: OrderStatus }> = ({ status }) => {
         <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-0.5 bg-gray-200 -z-0"></div>
         {/* Completed connector progress */}
         <div
-          className="absolute left-6 top-1/2 -translate-y-1/2 h-0.5 bg-indigo-600 -z-0 transition-all duration-500"
+          className="absolute left-6 top-1/2 -translate-y-1/2 h-0.5 bg-emerald-600 -z-0 transition-all duration-500"
           style={{
             width: `${Math.max(0, (Math.min(currentIdx, 3) / 3) * 100 - (currentIdx === 0 ? 0 : 5))}%`,
           }}
@@ -65,9 +65,9 @@ const OrderTimeline: React.FC<{ status: OrderStatus }> = ({ status }) => {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                   isDone
-                    ? 'bg-indigo-600 text-white shadow-sm ring-4 ring-indigo-50'
+                    ? 'bg-emerald-600 text-white shadow-sm ring-4 ring-emerald-50'
                     : isCurrent
-                    ? 'bg-white border-2 border-indigo-600 text-indigo-600 ring-4 ring-indigo-100'
+                    ? 'bg-white border-2 border-emerald-600 text-emerald-600 ring-4 ring-emerald-100'
                     : 'bg-white border-2 border-gray-300 text-gray-400'
                 }`}
               >
@@ -82,7 +82,7 @@ const OrderTimeline: React.FC<{ status: OrderStatus }> = ({ status }) => {
               <span
                 className={`mt-2 text-xs font-semibold whitespace-nowrap ${
                   isCurrent
-                    ? 'text-indigo-600'
+                    ? 'text-emerald-700 font-bold'
                     : isDone
                     ? 'text-gray-800'
                     : 'text-gray-400'
@@ -136,7 +136,7 @@ export const OrderHistory: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
         <div className="bg-white rounded-3xl p-12 border border-gray-100 shadow-sm">
-          <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
@@ -149,7 +149,7 @@ export const OrderHistory: React.FC = () => {
           </p>
           <Link
             to="/"
-            className="inline-flex items-center px-6 py-3 border border-transparent rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-sm"
+            className="inline-flex items-center px-6 py-3 border border-transparent rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-sm"
           >
             Start Shopping
           </Link>
@@ -169,7 +169,7 @@ export const OrderHistory: React.FC = () => {
         </div>
         <Link
           to="/"
-          className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition"
+          className="text-sm font-semibold text-emerald-700 hover:text-emerald-800 transition"
         >
           &larr; Back to Catalog
         </Link>

@@ -27,7 +27,7 @@ export interface RegisterData {
 export interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User | undefined>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -66,11 +66,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string): Promise<User | undefined> => {
     const response = await apiClient.post('/auth/login', { email, password });
     if (response.data?.data?.user) {
       setUser(response.data.data.user);
+      return response.data.data.user;
     }
+    return undefined;
   }, []);
 
   const register = useCallback(async (data: RegisterData) => {

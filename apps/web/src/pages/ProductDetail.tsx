@@ -51,7 +51,7 @@ export const ProductDetail: React.FC = () => {
         </p>
         <button
           onClick={() => navigate('/')}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
         >
           Return to Catalog
         </button>
@@ -61,7 +61,7 @@ export const ProductDetail: React.FC = () => {
 
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 3;
-  const fallbackUrl = `https://placehold.co/800x600/png?text=${encodeURIComponent(product.title)}`;
+  const fallbackUrl = `https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80`;
   const rawImages = product.images && product.images.length > 0
     ? product.images.filter((img) => img && img.url)
     : [];
@@ -92,21 +92,21 @@ export const ProductDetail: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb Navigation */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-8">
-        <Link to="/" className="hover:text-indigo-600 transition">Products</Link>
+      <nav className="flex items-center space-x-2 text-sm text-stone-500 mb-8">
+        <Link to="/" className="hover:text-teal-700 transition">Products</Link>
         <span>/</span>
-        <Link to={`/?category=${product.category?.slug}`} className="hover:text-indigo-600 transition capitalize">
+        <Link to={`/?category=${product.category?.slug}`} className="hover:text-teal-700 transition capitalize">
           {product.category?.name || 'Category'}
         </Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium truncate max-w-xs">{product.title}</span>
+        <span className="text-stone-900 font-medium truncate max-w-xs">{product.title}</span>
       </nav>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-3xl p-6 sm:p-10 border border-gray-100 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-3xl p-6 sm:p-10 border border-stone-200 shadow-sm">
         {/* Left: Images Gallery */}
         <div className="space-y-4">
-          <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center">
+          <div className="aspect-square bg-stone-50 rounded-2xl overflow-hidden border border-stone-200 flex items-center justify-center">
             <img
               src={currentImageUrl}
               alt={product.title}
@@ -128,7 +128,7 @@ export const ProductDetail: React.FC = () => {
                   key={img.id}
                   onClick={() => setSelectedImageIndex(idx)}
                   className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition shrink-0 ${
-                    selectedImageIndex === idx ? 'border-indigo-600 shadow-sm' : 'border-gray-200 opacity-70 hover:opacity-100'
+                    selectedImageIndex === idx ? 'border-emerald-600 shadow-sm' : 'border-stone-200 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img
@@ -154,25 +154,25 @@ export const ProductDetail: React.FC = () => {
           <div className="space-y-6">
             {/* Category & SKU */}
             <div className="flex items-center justify-between">
-              <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider rounded-md">
+              <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-lg border border-emerald-100">
                 {product.category?.name}
               </span>
-              <span className="text-xs text-gray-400 font-mono">SKU: {product.sku}</span>
+              <span className="text-xs text-stone-400 font-mono">SKU: {product.sku}</span>
             </div>
 
             {/* Title & Seller */}
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
                 {product.title}
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Sold by <span className="font-semibold text-gray-800">{product.seller?.storeName}</span>
+              <p className="mt-1 text-sm text-stone-500">
+                Sold by <span className="font-semibold text-stone-800">{product.seller?.storeName}</span>
               </p>
             </div>
 
             {/* Price & Stock Badge */}
-            <div className="flex items-center gap-4 py-4 border-y border-gray-100">
-              <span className="text-3xl font-black text-gray-900 tracking-tight">
+            <div className="flex items-center gap-4 py-4 border-y border-stone-100">
+              <span className="text-3xl font-black text-stone-900 tracking-tight">
                 {formatMoney(product.priceCents)}
               </span>
 
@@ -195,8 +195,8 @@ export const ProductDetail: React.FC = () => {
 
             {/* Description */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 mb-2">About this item</h3>
-              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+              <h3 className="text-sm font-bold text-stone-900 mb-2">About this item</h3>
+              <p className="text-sm text-stone-600 leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
             </div>
@@ -204,31 +204,31 @@ export const ProductDetail: React.FC = () => {
             {/* Quantity Selector */}
             {!isOutOfStock && (
               <div className="flex items-center gap-4">
-                <label htmlFor="quantity" className="text-sm font-semibold text-gray-700">
+                <label htmlFor="quantity" className="text-sm font-semibold text-stone-700">
                   Quantity:
                 </label>
-                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                <div className="flex items-center border border-stone-300 rounded-xl overflow-hidden bg-white">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
-                    className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition"
+                    className="px-3.5 py-2 bg-stone-50 hover:bg-stone-100 text-stone-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition"
                   >
                     -
                   </button>
-                  <span className="px-4 py-1.5 text-sm font-semibold text-gray-900 min-w-[2.5rem] text-center">
+                  <span className="px-4 py-2 text-sm font-semibold text-stone-900 min-w-[2.5rem] text-center">
                     {quantity}
                   </span>
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
                     disabled={quantity >= product.stock}
-                    className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition"
+                    className="px-3.5 py-2 bg-stone-50 hover:bg-stone-100 text-stone-600 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition"
                   >
                     +
                   </button>
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-stone-400">
                   (Max: {product.stock})
                 </span>
               </div>
@@ -236,16 +236,16 @@ export const ProductDetail: React.FC = () => {
           </div>
 
           {/* Action Button */}
-          <div className="pt-8 mt-6 border-t border-gray-100">
+          <div className="pt-8 mt-6 border-t border-stone-100">
             <button
               disabled={isOutOfStock || addToCartMutation.isPending}
               onClick={handleAddToCart}
-              className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center space-x-2 ${
+              className={`w-full py-3.5 px-6 rounded-2xl font-bold text-sm shadow-md transition-all flex items-center justify-center space-x-2 ${
                 isOutOfStock
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
+                  ? 'bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200 shadow-none'
                   : addToCartMutation.isPending
-                  ? 'bg-indigo-400 text-white cursor-wait'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98 shadow-indigo-100'
+                  ? 'bg-teal-400 text-white cursor-wait'
+                  : 'bg-teal-600 hover:bg-teal-700 text-white active:scale-98 shadow-teal-600/20'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -264,20 +264,20 @@ export const ProductDetail: React.FC = () => {
       </div>
 
       {/* Recommendations Section */}
-      <div className="mt-16 pt-12 border-t border-gray-200/80">
+      <div className="mt-16 pt-12 border-t border-stone-200">
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
-              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
-                Smart Suggestions
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+                GibeMart Suggestions
               </span>
             </div>
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight mt-1">
+            <h2 className="text-2xl font-black text-stone-900 tracking-tight mt-1">
               You May Also Like
             </h2>
-            <p className="text-xs text-gray-500 mt-1">
-              Frequently purchased together or popular in this category.
+            <p className="text-xs text-stone-500 mt-1">
+              Popular items frequently shopped together in this category.
             </p>
           </div>
         </div>
