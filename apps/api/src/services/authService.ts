@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+﻿import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { Role, User, Seller } from '@prisma/client';
@@ -33,7 +33,7 @@ export const REFRESH_TOKEN_COOKIE = 'refreshToken';
 export const getAccessTokenCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
   maxAge: 15 * 60 * 1000, // 15 minutes
   path: '/',
 });
@@ -41,7 +41,7 @@ export const getAccessTokenCookieOptions = () => ({
 export const getRefreshTokenCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   path: '/',
 });
@@ -345,3 +345,4 @@ export class AuthService {
 }
 
 export default AuthService;
+
