@@ -1,212 +1,360 @@
-﻿# GibeMart — Smart E-Commerce Platform
+# GibeMart — Smart E-Commerce Platform
 
-A modern, multi-vendor e-commerce platform built for the Ethiopian market. GibeMart connects Customers, Sellers, and Administrators through a secure, transactional system with ETB pricing, seller analytics, and a race-condition-safe checkout engine.
+**GibeMart** is a modern, multi-vendor e-commerce platform designed for the Ethiopian market. It connects customers, independent sellers, and administrators through a unified shopping experience, featuring ETB pricing, product discovery, seller management, order processing, and transactional checkout.
 
-Built for the **Brolf Tech Remote Internship Challenge 2026 — Project 2: Smart E-Commerce Platform**.
+The platform aims to simplify online shopping and empower local businesses through a reliable and scalable digital marketplace.
 
----
-
-## 🔗 Live Demo
-
-- **Frontend:** https://smart-ecommerce-psi.vercel.app
-- **Backend API:** https://smart-ecommerce-api-ek3p.onrender.com/api/v1/health
-- **Database:** MySQL 8 (hosted on Railway)
+**Developed for:** Brolf Tech Remote Internship Challenge 2026 — Project 2: Smart E-Commerce Platform.
 
 ---
 
-## 🔑 Demo Credentials
+## Live Demo
 
-Use these accounts to explore all three roles on the live demo:
+- **Frontend:** [https://smart-ecommerce-psi.vercel.app](https://smart-ecommerce-psi.vercel.app)
+- **Backend API Health:** [https://smart-ecommerce-api-ek3p.onrender.com/api/v1/health](https://smart-ecommerce-api-ek3p.onrender.com/api/v1/health)
+- **Database:** MySQL 8
 
-| Role | Email | Password | Access |
-| :--- | :--- | :--- | :--- |
-| **Admin** | admin@demo.com | Admin123! | Admin Panel (approve sellers, view all orders) |
-| **Seller** | seller1@demo.com | Seller123! | Seller Dashboard (products, analytics) |
-| **Seller (Pending)** | seller4@demo.com | Seller123! | Pending approval flow |
-| **Customer** | customer1@demo.com | Customer123! | Shopping, cart, checkout, order history |
-
-**Admin URL:** Navigate directly to `/admin/login` (this route is not linked publicly for security).
+Demo credentials are provided separately for authorized project evaluation.
 
 ---
 
-## ✨ Features
+## Features
 
-### For Customers
-- Browse the product catalog with a dynamic homepage (animated carousel, category grids)
-- Full-text search across product titles and descriptions
-- Filter by category, price range (ETB), and stock availability
-- Add to cart with server-side quantity validation
-- Transactional checkout with idempotency protection
-- Order history with visual status timeline (Paid → Processing → Shipped → Delivered)
-- Personalized product recommendations ("Customers also bought")
+### Customer Experience
 
-### For Sellers
-- Apply to become a seller (requires Admin approval)
-- Product CRUD with image support, draft/published states
-- Low-stock and out-of-stock badges
-- Real-time revenue analytics with interactive charts
-- Order management for their own products only
+- Dynamic homepage with promotional carousel and category discovery.
+- Product catalog with search and filtering.
+- Filter products by category, price range (ETB), and availability.
+- Shopping cart with server-side quantity validation.
+- Transactional checkout with idempotency protection.
+- Order history with visual order-status tracking.
+- Personalized product recommendations.
+- Customer account management.
 
-### For Administrators
-- Approve or reject pending seller applications
-- Platform-wide metrics (revenue, orders, users, sellers)
-- View all orders across the marketplace
-- In-app notification system
+### Seller Dashboard
 
----
+- Seller registration and administrator approval workflow.
+- Product management with create, update, and delete operations.
+- Product image support and draft/published states.
+- Inventory tracking with low-stock and out-of-stock indicators.
+- Order management for individual sellers.
+- Revenue and sales analytics with interactive charts.
+- Seller-specific product and order access.
 
-## 🛠️ Tech Stack
+### Administrator Dashboard
 
-| Layer | Technology |
-| :--- | :--- |
-| **Frontend** | React 18, Vite, Tailwind CSS, React Router, TanStack Query |
-| **Backend** | Node.js 20, Express, TypeScript, Zod |
-| **Database** | MySQL 8, Prisma ORM |
-| **Authentication** | JWT (access + refresh), bcrypt, HttpOnly cookies |
-| **Testing** | Vitest, Supertest (25 automated tests) |
-| **Charts** | Recharts |
-| **Deployment** | Vercel (frontend), Render (backend), Railway (database) |
+- Seller application review and approval.
+- Platform-wide statistics covering revenue, orders, users, and sellers.
+- Marketplace-wide order management.
+- In-app notifications.
+- Centralized platform management.
 
 ---
 
-## 🏗️ Architecture
+## Technology Stack
 
-The application is a decoupled monorepo with two apps: apps/web (frontend) and apps/api (backend). Each app is deployed independently, communicating over HTTPS with strict CORS enforcement.
-
-- Browser (React) sends HTTPS REST requests with HttpOnly Cookies.
-- Vercel hosts the frontend.
-- Render hosts the Express API.
-- Railway hosts the MySQL 8 database, accessed via Prisma ORM.
-
----
-
-## 🧠 Key Technical Highlights
-
-### Transactional Checkout with Concurrency Safety
-The checkout endpoint (POST /api/v1/orders) is wrapped in a single Prisma transaction. Stock is decremented atomically using an UPDATE with a WHERE stock >= quantity condition. If two users buy the last item simultaneously, exactly one transaction succeeds and the other receives a 400 OUT_OF_STOCK error. This is verified by an automated test that fires both requests in parallel via Promise.all.
-
-### Idempotent Orders
-Every checkout request accepts an Idempotency-Key header. If the same key is submitted twice (e.g., double-click), the second request returns the original order instead of charging the customer twice.
-
-### Order State Machine
-Orders follow a strict lifecycle: PAID → PROCESSING → SHIPPED → DELIVERED. CANCELLED is allowed only before SHIPPED. Invalid transitions return 400 INVALID_TRANSITION. Stale transitions (concurrent updates) return 409 CONFLICT due to optimistic locking.
-
-### Role-Based Access Control (RBAC)
-All protected endpoints enforce RBAC on the backend, not just in the UI. Middleware includes authenticate, requireRole, and requireApprovedSeller.
-
-### Price Snapshots
-Every OrderItem stores unitPriceCents at the moment of purchase. If a seller later changes the product price, historical order totals remain accurate.
-
-### AI Recommendations
-A SQL co-occurrence algorithm recommends products by finding items frequently purchased together, with a same-category fallback for new products. No external LLM dependencies.
+| Layer               | Technologies                    |
+| ------------------- | ------------------------------- |
+| Frontend            | React 18, Vite, Tailwind CSS    |
+| Routing             | React Router                    |
+| Data Management     | TanStack Query                  |
+| Backend             | Node.js 20, Express, TypeScript |
+| Validation          | Zod                             |
+| Database            | MySQL 8                         |
+| ORM                 | Prisma                          |
+| Authentication      | JWT, bcrypt, HttpOnly Cookies   |
+| Charts              | Recharts                        |
+| Testing             | Vitest, Supertest               |
+| Frontend Deployment | Vercel                          |
+| Backend Deployment  | Render                          |
+| Database Hosting    | Railway                         |
 
 ---
 
-## 🧪 Testing
+## Architecture
 
-The backend has 25 automated tests across 4 suites:
+GibeMart follows a decoupled application architecture consisting of two main applications:
 
-- auth.test.ts — Register, login, refresh rotation, RBAC 403s (9 tests)
-- cartAndCheckout.test.ts — Cart ops, checkout, idempotency (8 tests)
-- concurrency.test.ts — Race condition: 2 users buy the last item (1 test)
-- adminAndAnalytics.test.ts — Admin stats, seller approval, notifications (7 tests)
+- **Frontend (`apps/web`):** React-based user interface for customers, sellers, and administrators.
+- **Backend (`apps/api`):** Express REST API responsible for authentication, authorization, business logic, order processing, and database operations.
 
-Run the tests:
+The frontend communicates with the backend through HTTPS-based REST API requests. Prisma ORM manages database interactions with MySQL.
 
+The application uses role-based access control (RBAC) to enforce permissions across different user roles.
+
+---
+
+## Project Structure
+
+```text
+smart-ecommerce/
+│
+├── apps/
+│   ├── api/
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma
+│   │   │   ├── migrations/
+│   │   │   └── seed.ts
+│   │   │
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   ├── middleware/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   └── index.ts
+│   │   │
+│   │   └── tests/
+│   │
+│   └── web/
+│       ├── public/
+│       └── src/
+│           ├── api/
+│           ├── components/
+│           ├── context/
+│           ├── pages/
+│           └── utils/
+│
+├── docs/
+│   ├── REPORT.md
+│   ├── schema.md
+│   ├── decisions.md
+│   └── erd.png
+│
+└── README.md
+```
+
+---
+
+## Key Technical Highlights
+
+### 1. Transactional Checkout and Concurrency Safety
+
+The checkout process uses Prisma database transactions to maintain data consistency.
+
+Product stock is updated atomically using a conditional database update that verifies sufficient inventory before completing a purchase.
+
+This prevents overselling when multiple customers attempt to purchase the remaining stock simultaneously.
+
+### 2. Idempotent Order Processing
+
+Checkout requests support idempotency keys to prevent duplicate order creation when requests are repeated, such as when customers accidentally submit checkout more than once.
+
+Repeated requests with the same key return the original order instead of creating another one.
+
+### 3. Order Lifecycle Management
+
+Orders follow a controlled lifecycle:
+
+`PAID → PROCESSING → SHIPPED → DELIVERED`
+
+Cancellation is restricted according to the order's current state. Invalid state transitions are rejected, and concurrent updates are handled through optimistic locking.
+
+### 4. Role-Based Access Control
+
+Backend authorization enforces permissions based on user roles.
+
+The platform distinguishes between:
+
+- Customers
+- Sellers
+- Administrators
+
+Seller-specific operations are restricted to the seller who owns the relevant resources, while administrative operations require administrator privileges.
+
+### 5. Historical Price Consistency
+
+Order items store the product price at the time of purchase.
+
+This ensures that historical order totals remain accurate even if the seller changes the product price later.
+
+### 6. Product Recommendations
+
+The recommendation engine uses SQL-based product co-occurrence analysis to identify products frequently purchased together.
+
+A same-category fallback is provided for products with insufficient purchase history.
+
+---
+
+## Testing
+
+The backend includes **25 automated tests across four test suites**.
+
+| Test Suite                  | Coverage                                                      |
+| --------------------------- | ------------------------------------------------------------- |
+| `auth.test.ts`              | Registration, login, token refresh, and authorization         |
+| `cartAndCheckout.test.ts`   | Cart operations, checkout, and idempotency                    |
+| `concurrency.test.ts`       | Concurrent purchases and stock consistency                    |
+| `adminAndAnalytics.test.ts` | Administration, seller approval, analytics, and notifications |
+
+### Run Tests
+
+```bash
 cd apps/api
 npm test
+```
 
 ---
 
-## 💻 Local Development
+## Local Development
 
 ### Prerequisites
-- Node.js 20+
-- MySQL 8 database (local or cloud)
+
+- Node.js 20 or later
+- MySQL 8
 - Git
+- npm
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
+```bash
 git clone https://github.com/AbdulhamidN/Smart-Ecommerce-.git
+
 cd Smart-Ecommerce-
+```
+
+### 2. Install Dependencies
+
+Install the dependencies for the frontend and backend according to their respective package configurations.
+
+```bash
+cd apps/api
 npm install
 
-### 2. Configure environment variables
+cd ../web
+npm install
+```
 
-Create apps/api/.env with: DATABASE_URL, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL, CORS_ORIGIN, WEB_URL, NODE_ENV, PORT.
+### 3. Configure Environment Variables
 
-Create apps/web/.env with: VITE_API_URL=http://localhost:4000/api/v1
+Create an `.env` file inside `apps/api/`:
 
-### 3. Set up the database
+```env
+DATABASE_URL="mysql://user:password@localhost:3306/database"
 
+JWT_ACCESS_SECRET="your-secure-access-secret"
+JWT_REFRESH_SECRET="your-secure-refresh-secret"
+
+ACCESS_TOKEN_TTL="15m"
+REFRESH_TOKEN_TTL="7d"
+
+CORS_ORIGIN="http://localhost:5173"
+WEB_URL="http://localhost:5173"
+
+NODE_ENV="development"
+PORT=4000
+```
+
+Create an `.env` file inside `apps/web/`:
+
+```env
+VITE_API_URL="http://localhost:4000/api/v1"
+```
+
+Use your own local database credentials and securely generated secrets.
+
+**Important:** Never commit `.env` files, production credentials, private keys, or other sensitive configuration to GitHub.
+
+### 4. Initialize the Database
+
+```bash
 cd apps/api
+
 npx prisma migrate dev
 npx prisma db seed
+```
 
-### 4. Run the app
+### 5. Start the Applications
 
-In two separate terminals:
+Run the backend in one terminal:
 
-Terminal 1 (API): cd apps/api && npm run dev
-Terminal 2 (Web): cd apps/web && npm run dev
+```bash
+cd apps/api
+npm run dev
+```
 
-Open http://localhost:5173 and log in with any demo credential.
+Run the frontend in another terminal:
+
+```bash
+cd apps/web
+npm run dev
+```
+
+Open the application:
+
+```text
+http://localhost:5173
+```
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
-### Backend (Render)
-- Root Directory: apps/api
-- Build Command: npm install && npx prisma generate && npm run build
-- Start Command: npm start
-- Environment Variables: DATABASE_URL, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, CORS_ORIGIN, PORT
-- Post-Deploy: Run npx prisma db seed via Render Shell for the first deployment.
+The application uses separate deployment environments for its frontend, backend, and database.
 
-### Frontend (Vercel)
-- Root Directory: apps/web
+### Frontend — Vercel
+
+- Root Directory: `apps/web`
 - Framework: Vite
-- Build Command: npm run build
-- Environment Variable: VITE_API_URL = https://your-render-url.onrender.com/api/v1
+- Build Command: `npm run build`
+- Environment Variable: `VITE_API_URL`
 
-### Database (Railway)
-- MySQL 8 service, connected via DATABASE_URL.
+### Backend — Render
 
----
+- Root Directory: `apps/api`
+- Build Command: `npm install && npx prisma generate && npm run build`
+- Start Command: `npm start`
 
-## 📚 Documentation
+Configure the required production environment variables through the hosting provider's environment settings.
 
-Additional documentation lives in the docs/ folder:
-- docs/REPORT.md — Full project report (Chapters 1–5)
-- docs/schema.md — Database schema and design rationale
-- docs/decisions.md — Engineering decisions and trade-offs
-- docs/erd.png — Entity-Relationship Diagram
+### Database — Railway
 
----
+- Database: MySQL 8
+- Connection: Prisma ORM through `DATABASE_URL`
 
-## 🗺️ Roadmap / Future Work
-
-- Integrate real payment gateways (Telebirr, CBE Birr, Chapa, M-Pesa)
-- Add seller image uploads via Cloudinary or AWS S3
-- Implement email and SMS notifications
-- Add product reviews and ratings
-- Build a React Native mobile app
-- Add CI/CD with GitHub Actions
+Database migrations should be applied as part of the deployment process.
 
 ---
 
-## 📄 License
+## Documentation
 
-This project was built as part of the Brolf Tech Remote Internship Challenge 2026 and is intended for educational and portfolio purposes.
+Additional project documentation is available in the `docs/` directory.
+
+| Document       | Description                               |
+| -------------- | ----------------------------------------- |
+| `REPORT.md`    | Full project report covering Chapters 1–5 |
+| `schema.md`    | Database schema and design rationale      |
+| `decisions.md` | Engineering decisions and trade-offs      |
+| `erd.png`      | Entity-Relationship Diagram               |
 
 ---
 
-## 🙏 Acknowledgments
+## Future Improvements
 
-- Brolf Tech PLC for the internship challenge
-- Prisma, Vercel, Render, and Railway for their free-tier infrastructure
-- Antigravity for AI-assisted development (all code was reviewed and tested manually)
+Potential enhancements include:
+
+- Integration with Ethiopian payment providers such as Telebirr and Chapa.
+- Seller image uploads through Cloudinary or AWS S3.
+- Email and SMS notifications.
+- Product reviews and ratings.
+- Enhanced seller settlement and payout management.
+- Mobile application development using React Native.
+- Continuous Integration and Deployment using GitHub Actions.
 
 ---
 
-Built with care for the Ethiopian market. Made with React, Express, and Prisma.
+## License and Project Purpose
+
+GibeMart was developed as part of the **Brolf Tech Remote Internship Challenge 2026 —  Smart E-Commerce Platform**.
+
+The project demonstrates the design and implementation of a multi-vendor e-commerce application, covering frontend development, backend services, database management, authentication, transactional operations, and deployment.
+
+---
+
+## Acknowledgments
+
+- **Brolf Tech PLC** — Internship challenge and project opportunity.
+- **Prisma** — Database ORM.
+- **Vercel** — Frontend hosting.
+- **Render** — Backend hosting.
+- **Railway** — Database infrastructure.
+
