@@ -1,8 +1,6 @@
 ﻿import axios from 'axios';
 
-const baseURL =
-  import.meta.env.VITE_API_URL ||
-  'https://smart-ecommerce-api-ek3p.onrender.com/api/v1';
+const baseURL = 'https://smart-ecommerce-api-ek3p.onrender.com/api/v1';
 
 export const apiClient = axios.create({
   baseURL,
